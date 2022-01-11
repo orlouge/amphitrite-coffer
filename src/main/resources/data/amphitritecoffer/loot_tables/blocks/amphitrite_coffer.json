@@ -1,0 +1,39 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "amphitritecoffer:amphitrite_coffer",
+          "functions":  [
+              {
+                "function": "copy_nbt",
+                "conditions": [],
+                "source":
+                    {
+                        "type": "context",
+                        "target": "block_entity"
+                    },
+                "ops": [
+                    {
+                        "source": "Items",
+                        "target": "BlockEntityTag.Items",
+                        "op": "replace"
+                    }
+                ]
+              },
+              {
+                "function": "copy_name",
+                "conditions": [],
+                "source": "block_entity"
+              }
+           ]
+        }
+      ],
+      "conditions": [
+      ]
+    }
+  ]
+}

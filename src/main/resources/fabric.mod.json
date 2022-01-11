@@ -1,29 +1,35 @@
 {
   "schemaVersion": 1,
-  "id": "modid",
+  "id": "amphitritecoffer",
   "version": "${version}",
 
-  "name": "Example Mod",
-  "description": "This is an example description! Tell everyone what your mod is about!",
+  "name": "Amphitrite Coffer",
+  "description": "Adds a portable container found in Ocean Monuments",
   "authors": [
-    "Me!"
+    "orlouge"
   ],
   "contact": {
-    "homepage": "https://fabricmc.net/",
-    "sources": "https://github.com/FabricMC/fabric-example-mod"
+    "homepage": "https://github.com/orlouge/amphitrite-coffer",
+    "sources": "https://github.com/orlouge/amphitrite-coffer"
   },
 
-  "license": "CC0-1.0",
-  "icon": "assets/modid/icon.png",
+  "license": "MIT",
+  "icon": "assets/amphitritecoffer/icon.png",
 
   "environment": "*",
   "entrypoints": {
     "main": [
-      "net.fabricmc.example.ExampleMod"
+      "io.github.orlouge.amphitritecoffer.AmphitriteCofferMod"
+    ],
+    "client": [
+      "io.github.orlouge.amphitritecoffer.AmphitriteCofferClientMod"
+    ],
+    "modmenu": [
+      "io.github.orlouge.amphitritecoffer.config.AmphitriteCofferModMenuIntegration"
     ]
   },
   "mixins": [
-    "modid.mixins.json"
+    "amphitritecoffer.mixins.json"
   ],
 
   "depends": {

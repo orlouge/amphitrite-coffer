@@ -1,0 +1,5 @@
+{
+    "block.amphitritecoffer.amphitrite_coffer": "Amphitrite Coffer",
+    "text.autoconfig.amphitritecoffer.option.allowShulkersInCoffers": "Allow shulkers inside of coffers",
+    "text.autoconfig.amphitritecoffer.option.allowShulkersInCoffers.@Tooltip": "Allow shulkers, bundles and other portable (non-nestable) containers to be put inside of coffers, except for coffers themselves."
+}
