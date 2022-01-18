@@ -9,9 +9,12 @@ import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventories;
+import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SidedInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.screen.PropertyDelegate;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -30,13 +33,31 @@ import java.util.stream.IntStream;
 
 public class AmphitriteCofferBlockEntity extends LootableContainerBlockEntity implements SidedInventory {
     private DefaultedList<ItemStack> inventory = DefaultedList.ofSize(18, ItemStack.EMPTY);
+    private DefaultedList<ItemStack> chargeItemStacks = DefaultedList.ofSize(1, ItemStack.EMPTY);
     private boolean shouldConvert = true;
+    private int charge = 0;
 
     public AmphitriteCofferBlockEntity(BlockPos blockPos, BlockState blockState) {
         super(AmphitriteCofferMod.AMPHITRITE_COFFER_BLOCK_ENTITY, blockPos, blockState);
     }
 
-    public static void tick(World world1, BlockPos pos, BlockState state1, AmphitriteCofferBlockEntity be) {
+    public static void tick(World world, BlockPos pos, BlockState state, AmphitriteCofferBlockEntity blockEntity) {
+        ItemStack chargeStack = blockEntity.chargeItemStacks.get(0);
+        if (blockEntity.charge <= 0 && chargeStack.isOf(Items.HEART_OF_THE_SEA)) {
+            blockEntity.charge = 12000;
+            chargeStack.decrement(1);
+            AmphitriteCofferBlockEntity.markDirty(world, pos, state);
+            updateChargedState(world, pos, state, blockEntity);
+        }
+        blockEntity.charge -= 1; //TODO: remove
+    }
+
+    private static void updateChargedState(World world, BlockPos pos, BlockState state, AmphitriteCofferBlockEntity blockEntity) {
+        if (!(state.getBlock() instanceof AmphitriteCofferBlock)) {
+            return;
+        }
+        state = (BlockState) state.with(AmphitriteCofferBlock.CHARGED, blockEntity.charge > 0);
+        world.setBlockState(pos, state, Block.NOTIFY_LISTENERS);
     }
 
     @Override
@@ -58,7 +79,7 @@ public class AmphitriteCofferBlockEntity extends LootableContainerBlockEntity im
 
     @Override
     protected Text getContainerName() {
-        return Text.of("Amphitrite Coffer");
+        return Text.of("");
     }
 
     @Override
@@ -68,6 +89,13 @@ public class AmphitriteCofferBlockEntity extends LootableContainerBlockEntity im
         if (!this.deserializeLootTable(nbt) && nbt.contains("Items", 9)) {
             Inventories.readNbt(nbt, this.inventory);
         }
+        this.charge = nbt.getInt("Charge");
+        if (nbt.contains("ChargeInventory")) {
+            NbtCompound nbtChargeInventory = nbt.getCompound("ChargeInventory");
+            if (nbtChargeInventory.contains("Items", 9)) {
+                Inventories.readNbt(nbtChargeInventory, this.chargeItemStacks);
+            }
+        }
     }
 
     @Override
@@ -76,6 +104,10 @@ public class AmphitriteCofferBlockEntity extends LootableContainerBlockEntity im
         if (!this.serializeLootTable(nbt)) {
             Inventories.writeNbt(nbt, this.inventory, false);
         }
+        nbt.putInt("Charge", charge);
+        NbtCompound nbtChargeInventory = new NbtCompound();
+        Inventories.writeNbt(nbtChargeInventory, this.chargeItemStacks, false);
+        nbt.put("ChargeInventory", nbtChargeInventory);
     }
 
     @Override
@@ -95,7 +127,7 @@ public class AmphitriteCofferBlockEntity extends LootableContainerBlockEntity im
 
     @Override
     public boolean canInsert(int slot, ItemStack stack, @Nullable Direction dir) {
-        return this.world.getBlockState(this.pos).get(Properties.WATERLOGGED) &&
+        return canOpen() &&
                stack.getCount() <= 1 &&
                !(Block.getBlockFromItem(stack.getItem()) instanceof ShulkerBoxBlock) &&
                !(Block.getBlockFromItem(stack.getItem()) instanceof AmphitriteCofferBlock);
@@ -103,12 +135,17 @@ public class AmphitriteCofferBlockEntity extends LootableContainerBlockEntity im
 
     @Override
     public boolean canExtract(int slot, ItemStack stack, Direction dir) {
-        return this.world.getBlockState(this.pos).get(Properties.WATERLOGGED);
+        return canOpen();
+    }
+
+    private boolean canOpen() {
+        return this.world.getBlockState(this.pos).get(AmphitriteCofferBlock.CHARGED) ||
+               this.world.getBlockState(this.pos).get(Properties.WATERLOGGED);
     }
 
     @Override
     protected ScreenHandler createScreenHandler(int syncId, PlayerInventory playerInventory) {
-        return new AmphitriteCofferScreenHandler(syncId, playerInventory, this);
+        return new AmphitriteCofferScreenHandler(syncId, playerInventory, this, this.chargeInventory, this.propertyDelegate);
     }
 
     public boolean isConverting() {
@@ -137,6 +174,81 @@ public class AmphitriteCofferBlockEntity extends LootableContainerBlockEntity im
 
         return itemEntity;
     }
+
+    private final PropertyDelegate propertyDelegate = new PropertyDelegate() {
+        @Override
+        public int get(int index) {
+            return charge;
+        }
+
+        @Override
+        public void set(int index, int value) {
+            charge = value;
+        }
+
+        @Override
+        public int size() {
+            return 1;
+        }
+    };
+
+    // public DefaultedList<ItemStack> droppedInventory() {
+    //     return this.chargeItemStacks;
+    // }
+
+    private Inventory chargeInventory = new Inventory() {
+        @Override
+        public int size() {
+            return 1;
+        }
+
+        @Override
+        public boolean isEmpty() {
+            return chargeItemStacks.get(0).isEmpty();
+        }
+
+        @Override
+        public ItemStack getStack(int slot) {
+            return chargeItemStacks.get(slot);
+        }
+
+        @Override
+        public ItemStack removeStack(int slot, int amount) {
+            ItemStack result = Inventories.splitStack(chargeItemStacks, slot, amount);
+            if (!result.isEmpty()) {
+                markDirty();
+            }
+            return result;
+        }
+
+        @Override
+        public ItemStack removeStack(int slot) {
+            return Inventories.removeStack(chargeItemStacks, slot);
+        }
+
+        @Override
+        public void setStack(int slot, ItemStack stack) {
+            chargeItemStacks.set(slot, stack);
+            if (stack.getCount() > getMaxCountPerStack()) {
+                stack.setCount(getMaxCountPerStack());
+            }
+        }
+
+        @Override
+        public void markDirty() {
+        }
+
+        @Override
+        public boolean canPlayerUse(PlayerEntity player) {
+            return true;
+        }
+
+        @Override
+        public void clear() {
+            chargeItemStacks.clear();
+        }
+    };
+
 
     /*
     @Override

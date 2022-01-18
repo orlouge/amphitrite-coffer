@@ -5,6 +5,9 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.screen.ArrayPropertyDelegate;
+import net.minecraft.screen.PropertyDelegate;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
 
@@ -13,29 +16,37 @@ import java.util.Optional;
 public class AmphitriteCofferScreenHandler
 extends ScreenHandler {
     private final Inventory inventory;
+    private final Inventory chargeInventory;
+    private PropertyDelegate propertyDelegate;
 
     public AmphitriteCofferScreenHandler(int syncId, PlayerInventory playerInventory) {
-            this(syncId, playerInventory, new SimpleInventory(18));
-        }
+            this(syncId, playerInventory, new SimpleInventory(18), new SimpleInventory(1), new ArrayPropertyDelegate(1));
+    }
 
-    public AmphitriteCofferScreenHandler(int syncId, PlayerInventory playerInventory, Inventory inventory) {
+    public AmphitriteCofferScreenHandler(int syncId, PlayerInventory playerInventory, Inventory inventory, Inventory chargeInventory, PropertyDelegate propertyDelegate) {
             super(AmphitriteCofferMod.AMPHITRITE_COFFER_SCREEN_HANDLER, syncId);
             AmphitriteCofferScreenHandler.checkSize(inventory, 18);
+            AmphitriteCofferScreenHandler.checkSize(chargeInventory, 1);
             this.inventory = inventory;
+            this.chargeInventory = chargeInventory;
+            this.propertyDelegate = propertyDelegate;
             inventory.onOpen(playerInventory.player);
-            int i = -36;
+            chargeInventory.onOpen(playerInventory.player);
+            this.addProperties(propertyDelegate);
             for (int j = 0; j < 2; ++j) {
                 for (int k = 0; k < 9; ++k) {
-                    this.addSlot(new AmphitriteCofferSlot(playerInventory.player, inventory, k + j * 9, 8 + k * 18, 18 + j * 18));
+                    this.addSlot(new AmphitriteCofferSlot(playerInventory.player, inventory, k + j * 9, 8 + k * 18, 39 + j * 18));
                 }
             }
+            // this.addSlot(new ChargeSlot(inventory, inventory.size() - 1, 80, 16));
+            this.addSlot(new ChargeSlot(chargeInventory, 0, 80, 16));
             for (int j = 0; j < 3; ++j) {
                 for (int k = 0; k < 9; ++k) {
-                    this.addSlot(new Slot(playerInventory, k + j * 9 + 9, 8 + k * 18, 103 + j * 18 + i));
+                    this.addSlot(new Slot(playerInventory, k + j * 9 + 9, 8 + k * 18, 89 + j * 18));
                 }
             }
             for (int j = 0; j < 9; ++j) {
-                this.addSlot(new Slot(playerInventory, j, 8 + j * 18, 161 + i));
+                this.addSlot(new Slot(playerInventory, j, 8 + j * 18, 147));
             }
         }
 
@@ -57,7 +68,7 @@ extends ScreenHandler {
                 return ItemStack.EMPTY;
             } else {
                 Optional<Optional<ItemStack>> transferred = AmphitriteCofferSlot.withPreConversion(player.world, transferringStack,
-                        convertedStack -> this.insertItem(convertedStack, 0, this.inventory.size(), false) ? Optional.of(convertedStack) : Optional.<ItemStack>empty(),
+                        convertedStack -> this.insertItem(convertedStack, 0, this.inventory.size() - 1, false) ? Optional.of(convertedStack) : Optional.<ItemStack>empty(),
                         convertedStack -> convertedStack,
                         (convertedStack, remaining) -> remaining
                 );
@@ -81,5 +92,26 @@ extends ScreenHandler {
     public void close(PlayerEntity player) {
         super.close(player);
         this.inventory.onClose(player);
+        this.chargeInventory.onClose(player);
+    }
+
+    public int getCharge() {
+        return this.propertyDelegate.get(0);
+    }
+
+    static class ChargeSlot extends Slot {
+        public ChargeSlot(Inventory inventory, int i, int j, int k) {
+            super(inventory, i, j, k);
+        }
+
+        @Override
+        public boolean canInsert(ItemStack stack) {
+            return stack.isOf(Items.HEART_OF_THE_SEA);
+        }
+
+        @Override
+        public int getMaxItemCount() {
+            return 64;
+        }
     }
 }

@@ -29,10 +29,11 @@ import net.minecraft.world.WorldAccess;
 
 public class AmphitriteCofferBlock extends BlockWithEntity implements Waterloggable {
     public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
+    public static final BooleanProperty CHARGED = BooleanProperty.of("charged");
 
     protected AmphitriteCofferBlock() {
         super(FabricBlockSettings.of(Material.METAL).hardness(5.0f).resistance(1200.0f).nonOpaque());
-        this.setDefaultState(this.stateManager.getDefaultState().with(WATERLOGGED, false));
+        this.setDefaultState(this.stateManager.getDefaultState().with(WATERLOGGED, false).with(CHARGED, false));
     }
 
     public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, ShapeContext context) {
@@ -67,6 +68,7 @@ public class AmphitriteCofferBlock extends BlockWithEntity implements Waterlogga
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         builder.add(WATERLOGGED);
+        builder.add(CHARGED);
     }
 
     @Override
@@ -95,7 +97,7 @@ public class AmphitriteCofferBlock extends BlockWithEntity implements Waterlogga
 
     @Override
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-        if (state.get(Properties.WATERLOGGED) == false) {
+        if (!state.get(Properties.WATERLOGGED) && !state.get(CHARGED)) {
             return ActionResult.FAIL;
         }
 
@@ -140,7 +142,11 @@ public class AmphitriteCofferBlock extends BlockWithEntity implements Waterlogga
     @Override
     public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
         if (state.getBlock() != newState.getBlock()) {
-            world.updateComparators(pos,this);
+            BlockEntity blockEntity = world.getBlockEntity(pos);
+            // if (blockEntity instanceof AmphitriteCofferBlockEntity) {
+            //     ItemScatterer.spawn(world, pos, ((AmphitriteCofferBlockEntity) blockEntity).droppedInventory());
+            // }
+            world.updateComparators(pos, this);
             super.onStateReplaced(state, world, pos, newState, moved);
         }
     }

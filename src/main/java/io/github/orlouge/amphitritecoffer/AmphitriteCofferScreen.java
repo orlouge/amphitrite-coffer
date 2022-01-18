@@ -10,15 +10,16 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 public class AmphitriteCofferScreen extends HandledScreen<ScreenHandler> {
-    private static final Identifier TEXTURE = new Identifier("textures/gui/container/generic_54.png");
+    private static final Identifier TEXTURE = new Identifier("amphitritecoffer", "textures/gui/container/amphitrite_coffer.png");
+    private static final int MAX_CHARGE = 12000, MAX_CHARGE_PER_COLUMN = 2000;
+    private final AmphitriteCofferScreenHandler screenHandler;
 
     public AmphitriteCofferScreen(ScreenHandler handler, PlayerInventory inventory, Text title) {
         super(handler, inventory, title);
         this.passEvents = false;
-        int i = 222;
-        int j = 114;
-        this.backgroundHeight = 150;
+        this.backgroundHeight = 172;
         this.playerInventoryTitleY = this.backgroundHeight - 94;
+        this.screenHandler = (AmphitriteCofferScreenHandler) handler;
     }
 
     @Override
@@ -33,9 +34,22 @@ public class AmphitriteCofferScreen extends HandledScreen<ScreenHandler> {
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderColor(0.8f, 1.0f, 1.0f, 1.0f);
         RenderSystem.setShaderTexture(0, TEXTURE);
+
         int i = (this.width - this.backgroundWidth) / 2;
         int j = (this.height - this.backgroundHeight) / 2;
-        this.drawTexture(matrices, i, j, 0, 0, this.backgroundWidth, 53);
-        this.drawTexture(matrices, i, j + 53, 0, 126, this.backgroundWidth, 96);
+        int charge = this.screenHandler.getCharge();
+        this.drawTexture(matrices, i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
+
+        drawbubbles:
+        for (int sidex = 19; sidex <= 110; sidex += 91) {
+            for (int bubblex = 0; bubblex < 54; bubblex += 18) {
+                int bubbleCharge = Math.min(charge, MAX_CHARGE_PER_COLUMN);
+                if (charge <= 0) break drawbubbles;
+                charge -= bubbleCharge;
+
+                int bubbleHeight = 27 * bubbleCharge / MAX_CHARGE_PER_COLUMN;
+                this.drawTexture(matrices, i + sidex + bubblex, j + 6 + 27 - bubbleHeight, 176, 27 -bubbleHeight, 10, bubbleHeight);
+            }
+        }
     }
 }

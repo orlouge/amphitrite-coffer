@@ -21,6 +21,16 @@
                         "source": "Items",
                         "target": "BlockEntityTag.Items",
                         "op": "replace"
+                    },
+                    {
+                        "source": "ChargeInventory",
+                        "target": "BlockEntityTag.ChargeInventory",
+                        "op": "replace"
+                    },
+                    {
+                        "source": "Charge",
+                        "target": "BlockEntityTag.Charge",
+                        "op": "replace"
                     }
                 ]
               },

@@ -1,5 +1,6 @@
 {
   "variants": {
-    "": { "model": "amphitritecoffer:block/amphitrite_coffer" }
+    "charged=true": { "model": "amphitritecoffer:block/amphitrite_coffer_charged" },
+    "charged=false": { "model": "amphitritecoffer:block/amphitrite_coffer" }
   }
 }
