@@ -366,10 +366,12 @@
 			"scale": [0.6, 0.6, 0.6]
 		},
 		"ground": {
+			"translation": [0, 1, 0],
 			"scale": [0.6, 0.6, 0.6]
 		},
 		"gui": {
-			"rotation": [15, 47, 0],
+			"rotation": [33, 47, 0],
+			"translation": [0, 1.75, -0.25],
 			"scale": [0.7, 0.7, 0.7]
 		}
 	}
