@@ -191,7 +191,7 @@ public class AmphitriteCofferBlockEntity extends LootableContainerBlockEntity im
 
         @Override
         public void set(int index, int value) {
-            if (value > 0) {
+            if (value >= 0) {
                 charge = value;
                 updateCharged = true;
             } else {
