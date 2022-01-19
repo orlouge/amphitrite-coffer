@@ -1,0 +1,8 @@
+{
+  "type": "amphitritecoffer:water_conversion",
+  "input": {
+    "item": "minecraft:glass_bottle"
+  },
+  "output": "minecraft:potion",
+  "outputNbt": {"Potion": "minecraft:water"}
+}

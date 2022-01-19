@@ -1,0 +1,9 @@
+{
+  "type": "amphitritecoffer:water_conversion",
+  "input": {
+    "item": "minecraft:leather_helmet"
+  },
+  "enchantment": "minecraft:respiration",
+  "enchantmentLevel": 3,
+  "cost": 50
+}

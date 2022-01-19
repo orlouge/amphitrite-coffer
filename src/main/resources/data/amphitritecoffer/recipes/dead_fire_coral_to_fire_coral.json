@@ -1,0 +1,8 @@
+{
+  "type": "amphitritecoffer:water_conversion",
+  "input": {
+    "item": "minecraft:dead_fire_coral"
+  },
+  "output": "minecraft:fire_coral",
+  "cost": 1
+}

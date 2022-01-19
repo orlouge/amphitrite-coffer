@@ -52,7 +52,7 @@ public class AmphitriteCofferMod implements ModInitializer {
 		Registry.register(
 				Registry.ITEM,
 				new Identifier("amphitritecoffer", "amphitrite_coffer"),
-				new BlockItem(AMPHITRITE_COFFER_BLOCK, new FabricItemSettings().group(ItemGroup.MISC))
+				new BlockItem(AMPHITRITE_COFFER_BLOCK, new FabricItemSettings().group(ItemGroup.MISC).maxCount(1))
 		);
 
 		AMPHITRITE_COFFER_BLOCK_ENTITY = Registry.register(

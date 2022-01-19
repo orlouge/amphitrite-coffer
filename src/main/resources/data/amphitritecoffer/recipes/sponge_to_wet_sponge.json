@@ -1,0 +1,7 @@
+{
+  "type": "amphitritecoffer:water_conversion",
+  "input": {
+    "item": "minecraft:sponge"
+  },
+  "output": "minecraft:wet_sponge"
+}

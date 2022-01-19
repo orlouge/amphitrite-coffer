@@ -1,0 +1,8 @@
+{
+  "type": "amphitritecoffer:water_conversion",
+  "input": {
+    "item": "minecraft:dead_bubble_coral"
+  },
+  "output": "minecraft:bubble_coral",
+  "cost": 1
+}

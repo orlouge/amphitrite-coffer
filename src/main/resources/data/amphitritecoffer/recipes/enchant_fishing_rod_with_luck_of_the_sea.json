@@ -1,0 +1,9 @@
+{
+  "type": "amphitritecoffer:water_conversion",
+  "input": {
+    "item": "minecraft:fishing_rod"
+  },
+  "enchantment": "minecraft:luck_of_the_sea",
+  "enchantmentLevel": 3,
+  "cost": 50
+}

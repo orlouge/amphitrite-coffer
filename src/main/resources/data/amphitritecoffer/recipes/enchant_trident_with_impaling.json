@@ -1,0 +1,9 @@
+{
+  "type": "amphitritecoffer:water_conversion",
+  "input": {
+    "item": "minecraft:trident"
+  },
+  "enchantment": "minecraft:impaling",
+  "enchantmentLevel": 5,
+  "cost": 50
+}

@@ -1,0 +1,7 @@
+{
+  "type": "amphitritecoffer:water_conversion",
+  "input": {
+    "item": "minecraft:cyan_concrete_powder"
+  },
+  "output": "minecraft:cyan_concrete"
+}

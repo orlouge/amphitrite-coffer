@@ -1,0 +1,8 @@
+{
+  "type": "amphitritecoffer:water_conversion",
+  "input": {
+    "item": "minecraft:deepslate_tiles"
+  },
+  "output": "minecraft:dark_prismarine",
+  "cost": 1
+}

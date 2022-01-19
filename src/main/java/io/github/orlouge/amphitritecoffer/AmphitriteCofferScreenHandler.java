@@ -14,7 +14,7 @@ import net.minecraft.screen.slot.Slot;
 import java.util.Optional;
 
 public class AmphitriteCofferScreenHandler
-extends ScreenHandler {
+extends ScreenHandler implements AmphitriteCofferSlot.Transfer {
     private final Inventory inventory;
     private final Inventory chargeInventory;
     private PropertyDelegate propertyDelegate;
@@ -35,7 +35,7 @@ extends ScreenHandler {
             this.addProperties(propertyDelegate);
             for (int j = 0; j < 2; ++j) {
                 for (int k = 0; k < 9; ++k) {
-                    this.addSlot(new AmphitriteCofferSlot(playerInventory.player, inventory, k + j * 9, 8 + k * 18, 39 + j * 18));
+                    this.addSlot(new AmphitriteCofferSlot(playerInventory.player, inventory, propertyDelegate, 8 + k * 18, 39 + j * 18, k + j * 9));
                 }
             }
             // this.addSlot(new ChargeSlot(inventory, inventory.size() - 1, 80, 16));
@@ -58,7 +58,7 @@ extends ScreenHandler {
     @Override
     public ItemStack transferSlot(PlayerEntity player, int index) {
         ItemStack itemStack = ItemStack.EMPTY;
-        Optional<ItemStack> giveBack = Optional.empty();
+        ItemStack giveBack = ItemStack.EMPTY;
         Slot slot = (Slot) this.slots.get(index);
         if (slot != null && slot.hasStack()) {
             ItemStack transferringStack = slot.getStack();
@@ -67,12 +67,9 @@ extends ScreenHandler {
             if (index < this.inventory.size() && !this.insertItem(transferringStack, this.inventory.size(), this.slots.size(), true)) {
                 return ItemStack.EMPTY;
             } else {
-                Optional<Optional<ItemStack>> transferred = AmphitriteCofferSlot.withPreConversion(player.world, transferringStack,
-                        convertedStack -> this.insertItem(convertedStack, 0, this.inventory.size() - 1, false) ? Optional.of(convertedStack) : Optional.<ItemStack>empty(),
-                        convertedStack -> convertedStack,
-                        (convertedStack, remaining) -> remaining
-                );
-                if (transferred.isPresent()) giveBack = transferred.get();
+                Optional<AmphitriteCofferSlot.TransferResult> transferred =
+                        AmphitriteCofferSlot.transfer(player.world, this.propertyDelegate, transferringStack, this);
+                if (transferred.isPresent()) giveBack = transferred.get().additionalOutput;
                 else return ItemStack.EMPTY;
             }
             if (transferringStack.isEmpty()) {
@@ -82,9 +79,9 @@ extends ScreenHandler {
             }
         }
 
-        giveBack.ifPresent(remainingStack ->
-                AmphitriteCofferSlot.giveAdditionalOutputBack(player, remainingStack)
-        );
+        if (!giveBack.isEmpty()) {
+            AmphitriteCofferSlot.giveAdditionalOutputBack(player, giveBack);
+        }
         return itemStack;
     }
 
@@ -97,6 +94,11 @@ extends ScreenHandler {
 
     public int getCharge() {
         return this.propertyDelegate.get(0);
+    }
+
+    @Override
+    public Optional<ItemStack> transferWithProxy(ItemStack convertedStack) {
+        return this.insertItem(convertedStack, 0, this.inventory.size(), false) ? Optional.of(convertedStack) : Optional.<ItemStack>empty();
     }
 
     static class ChargeSlot extends Slot {

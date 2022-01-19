@@ -36,6 +36,7 @@ public class AmphitriteCofferBlockEntity extends LootableContainerBlockEntity im
     private DefaultedList<ItemStack> chargeItemStacks = DefaultedList.ofSize(1, ItemStack.EMPTY);
     private boolean shouldConvert = true;
     private int charge = 0;
+    private boolean updateCharged = false;
 
     public AmphitriteCofferBlockEntity(BlockPos blockPos, BlockState blockState) {
         super(AmphitriteCofferMod.AMPHITRITE_COFFER_BLOCK_ENTITY, blockPos, blockState);
@@ -44,15 +45,19 @@ public class AmphitriteCofferBlockEntity extends LootableContainerBlockEntity im
     public static void tick(World world, BlockPos pos, BlockState state, AmphitriteCofferBlockEntity blockEntity) {
         ItemStack chargeStack = blockEntity.chargeItemStacks.get(0);
         if (blockEntity.charge <= 0 && chargeStack.isOf(Items.HEART_OF_THE_SEA)) {
-            blockEntity.charge = 12000;
+            blockEntity.charge = AmphitriteCofferMod.CONFIG.chargePerHeart;
+            blockEntity.updateCharged = true;
             chargeStack.decrement(1);
-            AmphitriteCofferBlockEntity.markDirty(world, pos, state);
-            updateChargedState(world, pos, state, blockEntity);
         }
-        blockEntity.charge -= 1; //TODO: remove
+
+        if (blockEntity.updateCharged) {
+            updateChargedState(world, pos, state, blockEntity);
+            AmphitriteCofferBlockEntity.markDirty(world, pos, state);
+            blockEntity.updateCharged = false;
+        }
     }
 
-    private static void updateChargedState(World world, BlockPos pos, BlockState state, AmphitriteCofferBlockEntity blockEntity) {
+    public static void updateChargedState(World world, BlockPos pos, BlockState state, AmphitriteCofferBlockEntity blockEntity) {
         if (!(state.getBlock() instanceof AmphitriteCofferBlock)) {
             return;
         }
@@ -82,6 +87,8 @@ public class AmphitriteCofferBlockEntity extends LootableContainerBlockEntity im
         return Text.of("");
     }
 
+
+
     @Override
     public void readNbt(NbtCompound nbt) {
         super.readNbt(nbt);
@@ -90,6 +97,7 @@ public class AmphitriteCofferBlockEntity extends LootableContainerBlockEntity im
             Inventories.readNbt(nbt, this.inventory);
         }
         this.charge = nbt.getInt("Charge");
+        this.updateCharged = true;
         if (nbt.contains("ChargeInventory")) {
             NbtCompound nbtChargeInventory = nbt.getCompound("ChargeInventory");
             if (nbtChargeInventory.contains("Items", 9)) {
@@ -183,7 +191,20 @@ public class AmphitriteCofferBlockEntity extends LootableContainerBlockEntity im
 
         @Override
         public void set(int index, int value) {
-            charge = value;
+            if (value > 0) {
+                charge = value;
+                updateCharged = true;
+            } else {
+                ItemStack chargeStack = chargeItemStacks.get(0);
+                value = -value;
+                int required = value / AmphitriteCofferMod.CONFIG.chargePerHeart +
+                               value % AmphitriteCofferMod.CONFIG.chargePerHeart == 0 ? 0 : 1;
+                if (chargeStack.isOf(Items.HEART_OF_THE_SEA) && chargeStack.getCount() >= required) {
+                    charge += required * AmphitriteCofferMod.CONFIG.chargePerHeart;
+                    updateCharged = true;
+                    chargeStack.decrement(required);
+                }
+            }
         }
 
         @Override
@@ -248,6 +269,10 @@ public class AmphitriteCofferBlockEntity extends LootableContainerBlockEntity im
             chargeItemStacks.clear();
         }
     };
+
+    public PropertyDelegate getPropertyDelegate() {
+        return propertyDelegate;
+    }
 
 
     /*

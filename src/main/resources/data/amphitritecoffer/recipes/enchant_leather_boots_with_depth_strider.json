@@ -1,0 +1,9 @@
+{
+  "type": "amphitritecoffer:water_conversion",
+  "input": {
+    "item": "minecraft:leather_boots"
+  },
+  "enchantment": "minecraft:depth_strider",
+  "enchantmentLevel": 3,
+  "cost": 50
+}

@@ -1,0 +1,8 @@
+{
+  "type": "amphitritecoffer:water_conversion",
+  "input": {
+    "item": "minecraft:lava_bucket"
+  },
+  "output": "minecraft:obsidian",
+  "additionalOutput": "minecraft:bucket"
+}

@@ -1,0 +1,7 @@
+{
+  "type": "amphitritecoffer:water_conversion",
+  "input": {
+    "item": "minecraft:black_concrete_powder"
+  },
+  "output": "minecraft:black_concrete"
+}

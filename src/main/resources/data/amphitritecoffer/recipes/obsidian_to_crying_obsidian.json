@@ -1,0 +1,8 @@
+{
+  "type": "amphitritecoffer:water_conversion",
+  "input": {
+    "item": "minecraft:obsidian"
+  },
+  "output": "minecraft:crying_obsidian",
+  "cost": 2
+}

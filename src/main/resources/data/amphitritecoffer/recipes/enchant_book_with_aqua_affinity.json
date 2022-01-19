@@ -1,0 +1,10 @@
+{
+  "type": "amphitritecoffer:water_conversion",
+  "input": {
+    "item": "minecraft:book"
+  },
+  "output": "minecraft:enchanted_book",
+  "enchantment": "minecraft:aqua_affinity",
+  "enchantmentLevel": 1,
+  "cost": 50
+}

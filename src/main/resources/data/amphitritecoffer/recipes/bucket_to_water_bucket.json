@@ -1,0 +1,7 @@
+{
+  "type": "amphitritecoffer:water_conversion",
+  "input": {
+    "item": "minecraft:bucket"
+  },
+  "output": "minecraft:water_bucket"
+}

@@ -9,4 +9,6 @@ public class AmphitriteCofferConfig implements ConfigData {
 
     @ConfigEntry.Gui.Tooltip
     public boolean allowShulkersInCoffers = true;
+
+    public int chargePerHeart = 12000;
 }

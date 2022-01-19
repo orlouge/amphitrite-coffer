@@ -32,7 +32,7 @@ public class AmphitriteCofferBlock extends BlockWithEntity implements Waterlogga
     public static final BooleanProperty CHARGED = BooleanProperty.of("charged");
 
     protected AmphitriteCofferBlock() {
-        super(FabricBlockSettings.of(Material.METAL).hardness(5.0f).resistance(1200.0f).nonOpaque());
+        super(FabricBlockSettings.of(Material.METAL).hardness(5.0f).resistance(1200.0f).nonOpaque().luminance(state -> state.get(CHARGED) ? 15 : 0));
         this.setDefaultState(this.stateManager.getDefaultState().with(WATERLOGGED, false).with(CHARGED, false));
     }
 

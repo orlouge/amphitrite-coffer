@@ -26,27 +26,25 @@ public class HopperBlockEntityMixin {
     @Inject(method = "transfer(Lnet/minecraft/inventory/Inventory;Lnet/minecraft/inventory/Inventory;Lnet/minecraft/item/ItemStack;ILnet/minecraft/util/math/Direction;)Lnet/minecraft/item/ItemStack;", at = @At("HEAD"), cancellable = true)
     private static void onTransfer(Inventory from, Inventory to, ItemStack stack, int slot, Direction side, CallbackInfoReturnable<ItemStack> cir) {
         if (to instanceof AmphitriteCofferBlockEntity) {
-            AmphitriteCofferBlockEntity toCasted = (AmphitriteCofferBlockEntity) to;
-            if (!toCasted.isConverting()) return;
-            toCasted.setShouldConvert(false);
-            Optional<ItemStack> newStack = AmphitriteCofferSlot.withPreConversion(
-                    toCasted.getWorld(),
-                    stack,
-                    convertedStack -> transfer(from, to, convertedStack, slot, side),
-                    convertedStack -> Optional.of(convertedStack),
-                    (convertedStack, remainingOptional) -> {
-                        remainingOptional.ifPresent(remainingStack -> {
-                            ItemStack droppedStack = HopperBlockEntity.transfer(
-                                new SimpleInventory(remainingStack), to, remainingStack, Direction.UP
-                            );
-                            if (!droppedStack.isEmpty()) {
-                                toCasted.getWorld().spawnEntity(toCasted.dropStack(droppedStack));
-                            }
-                        });
-                        return convertedStack;
+            AmphitriteCofferBlockEntity coffer = (AmphitriteCofferBlockEntity) to;
+            if (!coffer.isConverting()) return;
+            coffer.setShouldConvert(false);
+            AmphitriteCofferSlot.Transfer transfer =
+                    convertedStack -> Optional.of(transfer(from, to, convertedStack, slot, side));
+            Optional<AmphitriteCofferSlot.TransferResult> result =
+                    AmphitriteCofferSlot.transfer(coffer.getWorld(), coffer.getPropertyDelegate(), stack, transfer);
+            Optional<ItemStack> newStack = result.map(res -> res.transferResult);
+            result.ifPresent(res -> {
+                if (!res.additionalOutput.isEmpty()) {
+                    ItemStack droppedStack = HopperBlockEntity.transfer(
+                            new SimpleInventory(res.additionalOutput), to, res.additionalOutput, Direction.UP
+                    );
+                    if (!droppedStack.isEmpty()) {
+                        coffer.getWorld().spawnEntity(coffer.dropStack(droppedStack));
                     }
-            );
-            toCasted.setShouldConvert(true);
+                }
+            });
+            coffer.setShouldConvert(true);
 
             cir.setReturnValue(newStack.orElse(null));
             cir.cancel();

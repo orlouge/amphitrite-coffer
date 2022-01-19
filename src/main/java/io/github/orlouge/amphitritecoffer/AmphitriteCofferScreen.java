@@ -11,7 +11,6 @@ import net.minecraft.util.Identifier;
 
 public class AmphitriteCofferScreen extends HandledScreen<ScreenHandler> {
     private static final Identifier TEXTURE = new Identifier("amphitritecoffer", "textures/gui/container/amphitrite_coffer.png");
-    private static final int MAX_CHARGE = 12000, MAX_CHARGE_PER_COLUMN = 2000;
     private final AmphitriteCofferScreenHandler screenHandler;
 
     public AmphitriteCofferScreen(ScreenHandler handler, PlayerInventory inventory, Text title) {
@@ -38,16 +37,16 @@ public class AmphitriteCofferScreen extends HandledScreen<ScreenHandler> {
         int i = (this.width - this.backgroundWidth) / 2;
         int j = (this.height - this.backgroundHeight) / 2;
         int charge = this.screenHandler.getCharge();
+        int maxChargePerColumn = AmphitriteCofferMod.CONFIG.chargePerHeart / 6;
         this.drawTexture(matrices, i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
-
         drawbubbles:
         for (int sidex = 19; sidex <= 110; sidex += 91) {
             for (int bubblex = 0; bubblex < 54; bubblex += 18) {
-                int bubbleCharge = Math.min(charge, MAX_CHARGE_PER_COLUMN);
                 if (charge <= 0) break drawbubbles;
-                charge -= bubbleCharge;
+                int bubbleCharge = Math.min(charge, maxChargePerColumn);
+                charge -= maxChargePerColumn;
 
-                int bubbleHeight = 27 * bubbleCharge / MAX_CHARGE_PER_COLUMN;
+                int bubbleHeight = 27 * bubbleCharge / maxChargePerColumn;
                 this.drawTexture(matrices, i + sidex + bubblex, j + 6 + 27 - bubbleHeight, 176, 27 -bubbleHeight, 10, bubbleHeight);
             }
         }

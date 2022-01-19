@@ -1,0 +1,8 @@
+{
+  "type": "amphitritecoffer:water_conversion",
+  "input": {
+    "item": "minecraft:cobblestone"
+  },
+  "output": "minecraft:prismarine",
+  "cost": 1
+}

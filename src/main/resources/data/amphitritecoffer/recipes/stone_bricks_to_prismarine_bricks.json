@@ -1,0 +1,8 @@
+{
+  "type": "amphitritecoffer:water_conversion",
+  "input": {
+    "item": "minecraft:stone_bricks"
+  },
+  "output": "minecraft:prismarine_bricks",
+  "cost": 1
+}

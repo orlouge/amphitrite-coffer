@@ -1,0 +1,7 @@
+{
+  "type": "amphitritecoffer:water_conversion",
+  "input": {
+    "item": "minecraft:lime_concrete_powder"
+  },
+  "output": "minecraft:lime_concrete"
+}

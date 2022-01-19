@@ -1,0 +1,10 @@
+{
+  "type": "amphitritecoffer:water_conversion",
+  "input": {
+    "item": "minecraft:potion"
+  },
+  "inputRequiredNbt": {"Potion": "minecraft:water"},
+  "output": "minecraft:potion",
+  "outputNbt": {"Potion": "long_water_breathing" },
+  "cost": 50
+}
