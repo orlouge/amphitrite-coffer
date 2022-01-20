@@ -64,13 +64,13 @@ public class AmphitriteCofferMod implements ModInitializer {
 		Registry.register(
 				Registry.RECIPE_TYPE,
 				new Identifier("amphitritecoffer", "water_conversion"),
-				AmphitriteCofferRecipe.Type.INSTANCE
+				WaterConversionRecipe.Type.INSTANCE
 		);
 
 		Registry.register(
 				Registry.RECIPE_SERIALIZER,
-				AmphitriteCofferRecipe.Serializer.ID,
-				AmphitriteCofferRecipe.Serializer.INSTANCE
+				WaterConversionRecipe.Serializer.ID,
+				WaterConversionRecipe.Serializer.INSTANCE
 		);
 	}
 

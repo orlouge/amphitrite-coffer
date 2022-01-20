@@ -26,6 +26,9 @@
     ],
     "modmenu": [
       "io.github.orlouge.amphitritecoffer.config.AmphitriteCofferModMenuIntegration"
+    ],
+    "rei" : [
+      "io.github.orlouge.amphitritecoffer.rei.AmphitriteCofferREIClientPlugin"
     ]
   },
   "mixins": [

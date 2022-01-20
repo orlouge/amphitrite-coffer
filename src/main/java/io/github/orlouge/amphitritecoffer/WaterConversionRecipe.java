@@ -7,6 +7,7 @@ import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.inventory.Inventory;
+import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -20,9 +21,12 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
-public class AmphitriteCofferRecipe implements net.minecraft.recipe.Recipe<Inventory> {
+public class WaterConversionRecipe implements net.minecraft.recipe.Recipe<Inventory> {
     private final Ingredient input;
     private final Optional<NbtCompound> inputRequiredNbt;
     private final Optional<ItemStack> outputWithoutNbt;
@@ -30,11 +34,12 @@ public class AmphitriteCofferRecipe implements net.minecraft.recipe.Recipe<Inven
     private final Optional<ItemStack> outputWithNbt;
     private final Optional<ItemStack> additionalOutput;
     private final Optional<Identifier> enchantment;
+    private final ItemStack displayOutput;
     private final int enchantmentLevel;
     private final int cost;
     private final Identifier id;
 
-    public AmphitriteCofferRecipe(Ingredient input, Optional<NbtCompound> inputRequiredNbt, Optional<ItemStack> output, Optional<NbtCompound> outputNbt, Optional<ItemStack> additionalOutput, Optional<Identifier> enchantment, int enchantmentLevel, int cost, Identifier id) {
+    public WaterConversionRecipe(Ingredient input, Optional<NbtCompound> inputRequiredNbt, Optional<ItemStack> output, Optional<NbtCompound> outputNbt, Optional<ItemStack> additionalOutput, Optional<Identifier> enchantment, int enchantmentLevel, int cost, Identifier id) {
         this.input = input;
         this.inputRequiredNbt = inputRequiredNbt;
         this.outputWithoutNbt = output;
@@ -46,6 +51,7 @@ public class AmphitriteCofferRecipe implements net.minecraft.recipe.Recipe<Inven
         this.cost = cost;
         this.id = id;
         outputNbt.ifPresent((nbt) -> this.outputWithNbt.ifPresent(out -> out.setNbt(nbt)));
+        this.displayOutput = this.craft(new SimpleInventory(getInput().iterator().next()));
     }
 
     @Override
@@ -106,9 +112,23 @@ public class AmphitriteCofferRecipe implements net.minecraft.recipe.Recipe<Inven
         return true;
     }
 
+    public Collection<ItemStack> getInput() {
+        return Arrays.stream(input.getMatchingStacks())
+                .map(stack -> {
+                    ItemStack newStack = stack.copy();
+                    inputRequiredNbt.ifPresent(nbt -> newStack.setNbt(nbt));
+                    return newStack;
+                })
+                .collect(Collectors.toList());
+    }
+
     @Override
     public ItemStack getOutput() {
         return outputWithNbt.orElse(ItemStack.EMPTY);
+    }
+
+    public ItemStack getSampleOutput() {
+        return displayOutput;
     }
 
     public Optional<ItemStack> getOutputWithoutNbt() {
@@ -146,7 +166,7 @@ public class AmphitriteCofferRecipe implements net.minecraft.recipe.Recipe<Inven
 
     public int getCost() { return cost; }
 
-    public static class Type implements RecipeType<AmphitriteCofferRecipe> {
+    public static class Type implements RecipeType<WaterConversionRecipe> {
         public static final Type INSTANCE = new Type();
         private Type() {}
     }
@@ -162,12 +182,12 @@ public class AmphitriteCofferRecipe implements net.minecraft.recipe.Recipe<Inven
         int cost;
     }
 
-    public static class Serializer implements RecipeSerializer<AmphitriteCofferRecipe> {
+    public static class Serializer implements RecipeSerializer<WaterConversionRecipe> {
         public static final Serializer INSTANCE = new Serializer();
         public static final String ID = "amphitritecoffer:water_conversion";
 
         @Override
-        public AmphitriteCofferRecipe read(Identifier id, JsonObject json) {
+        public WaterConversionRecipe read(Identifier id, JsonObject json) {
             JsonRecipe jsonRecipe = new Gson().fromJson(json, JsonRecipe.class);
 
             if (jsonRecipe.input == null || (jsonRecipe.output == null && jsonRecipe.enchantment == null)) {
@@ -218,7 +238,7 @@ public class AmphitriteCofferRecipe implements net.minecraft.recipe.Recipe<Inven
                         .getOrEmpty(new Identifier(jsonRecipe.additionalOutput))
                         .map(item -> new ItemStack(item, 1));
 
-            return new AmphitriteCofferRecipe(
+            return new WaterConversionRecipe(
                     input,
                     inputRequiredNbt,
                     output.map(item -> new ItemStack(item, 1)),
@@ -232,8 +252,8 @@ public class AmphitriteCofferRecipe implements net.minecraft.recipe.Recipe<Inven
         }
 
         @Override
-        public AmphitriteCofferRecipe read(Identifier id, PacketByteBuf buf) {
-            return new AmphitriteCofferRecipe(
+        public WaterConversionRecipe read(Identifier id, PacketByteBuf buf) {
+            return new WaterConversionRecipe(
                     Ingredient.fromPacket(buf),
                     buf.readOptional((buf2) -> buf2.readNbt()),
                     buf.readOptional((buf2) -> buf2.readItemStack()),
@@ -247,7 +267,7 @@ public class AmphitriteCofferRecipe implements net.minecraft.recipe.Recipe<Inven
         }
 
         @Override
-        public void write(PacketByteBuf buf, AmphitriteCofferRecipe recipe) {
+        public void write(PacketByteBuf buf, WaterConversionRecipe recipe) {
             recipe.input.write(buf);
             buf.writeOptional(recipe.inputRequiredNbt, (buf2, nbt) -> buf2.writeNbt(nbt));
             buf.writeOptional(recipe.outputWithoutNbt, (buf2, stack) -> buf2.writeItemStack(stack));

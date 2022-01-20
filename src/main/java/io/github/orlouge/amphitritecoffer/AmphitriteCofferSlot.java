@@ -10,7 +10,6 @@ import net.minecraft.screen.slot.Slot;
 import net.minecraft.world.World;
 
 import java.util.Optional;
-import java.util.function.BiFunction;
 import java.util.function.Function;
 
 public class AmphitriteCofferSlot extends Slot {
@@ -76,7 +75,7 @@ public class AmphitriteCofferSlot extends Slot {
 
     public ItemStack convertAndConsume(ItemStack stack, boolean dryRun, Function<Integer, Integer> maxFunction) {
         Inventory dummyInventory = dummyInventory(stack);
-        Optional<AmphitriteCofferRecipe> recipeOptional = getConversionRecipe(this.player.world, dummyInventory);
+        Optional<WaterConversionRecipe> recipeOptional = getConversionRecipe(this.player.world, dummyInventory);
 
         ItemStack convertedStack = applyConversionRecipe(dummyInventory, stack, this.propertyDelegate, recipeOptional, maxFunction);
 
@@ -88,7 +87,7 @@ public class AmphitriteCofferSlot extends Slot {
         return convertedStack;
     }
 
-    public static ItemStack applyConversionRecipe(ItemStack stack, PropertyDelegate propertyDelegate, Optional<AmphitriteCofferRecipe> recipeOptional) {
+    public static ItemStack applyConversionRecipe(ItemStack stack, PropertyDelegate propertyDelegate, Optional<WaterConversionRecipe> recipeOptional) {
         return applyConversionRecipe(dummyInventory(stack), stack, propertyDelegate, recipeOptional, max -> max);
     }
 
@@ -98,7 +97,7 @@ public class AmphitriteCofferSlot extends Slot {
         return new SimpleInventory(dummyStack);
     }
 
-    public static ItemStack applyConversionRecipe(Inventory inventory, ItemStack stack, PropertyDelegate propertyDelegate, Optional<AmphitriteCofferRecipe> recipeOptional, Function<Integer, Integer> maxStack) {
+    public static ItemStack applyConversionRecipe(Inventory inventory, ItemStack stack, PropertyDelegate propertyDelegate, Optional<WaterConversionRecipe> recipeOptional, Function<Integer, Integer> maxStack) {
         if (recipeOptional.isPresent()) {
             ItemStack output = recipeOptional.get().craft(inventory);
             if (output != null) {
@@ -117,7 +116,7 @@ public class AmphitriteCofferSlot extends Slot {
         return output;
     }
 
-    public static void giveAdditionalOutputBack(PlayerEntity player, int count, Optional<AmphitriteCofferRecipe> recipeOptional) {
+    public static void giveAdditionalOutputBack(PlayerEntity player, int count, Optional<WaterConversionRecipe> recipeOptional) {
         recipeOptional.flatMap(recipe -> recipe.getAdditionalOutput()).ifPresent(baseStack -> {
             ItemStack additionalOutputStack = baseStack.copy();
             additionalOutputStack.setCount(count);
@@ -135,19 +134,19 @@ public class AmphitriteCofferSlot extends Slot {
         }
     }
 
-    public static Optional<AmphitriteCofferRecipe> getConversionRecipe(World world, Inventory inventory) {
+    public static Optional<WaterConversionRecipe> getConversionRecipe(World world, Inventory inventory) {
         return world.getRecipeManager().getFirstMatch(
-                AmphitriteCofferRecipe.Type.INSTANCE,
+                WaterConversionRecipe.Type.INSTANCE,
                 inventory,
                 world
         );
     }
 
-    public static Optional<AmphitriteCofferRecipe> getConversionRecipe(World world, ItemStack stack) {
+    public static Optional<WaterConversionRecipe> getConversionRecipe(World world, ItemStack stack) {
         return getConversionRecipe(world, dummyInventory(stack));
     }
 
-    public static int consumeCharge(PropertyDelegate propertyDelegate, int count, Optional<AmphitriteCofferRecipe> optional) {
+    public static int consumeCharge(PropertyDelegate propertyDelegate, int count, Optional<WaterConversionRecipe> optional) {
         return optional.map(recipe -> consumeCharge(propertyDelegate, count, recipe.getCost(), false)).orElse(count);
     }
 
@@ -192,7 +191,7 @@ public class AmphitriteCofferSlot extends Slot {
 
     // XXX: called from client, causes desync when the charge is too low for the recipe
     public static Optional<TransferResult> transfer(World world, PropertyDelegate propertyDelegate, ItemStack stack, Transfer transfer) {
-        Optional<AmphitriteCofferRecipe> conversionRecipe = AmphitriteCofferSlot.getConversionRecipe(world, stack);
+        Optional<WaterConversionRecipe> conversionRecipe = AmphitriteCofferSlot.getConversionRecipe(world, stack);
         ItemStack convertedStack = AmphitriteCofferSlot.applyConversionRecipe(stack, propertyDelegate, conversionRecipe);
         int excess = stack.getCount() - convertedStack.getCount();
         int initialCount = convertedStack.getCount();
