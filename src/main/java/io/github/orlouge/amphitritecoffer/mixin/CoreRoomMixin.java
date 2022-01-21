@@ -1,6 +1,7 @@
 package io.github.orlouge.amphitritecoffer.mixin;
 
 
+import io.github.orlouge.amphitritecoffer.config.AmphitriteCofferConfig;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.LootableContainerBlockEntity;
@@ -34,7 +35,12 @@ public abstract class CoreRoomMixin extends StructurePiece {
               at = @At(value = "INVOKE", target = "Lnet/minecraft/structure/OceanMonumentGenerator$CoreRoom;fillWithOutline(Lnet/minecraft/world/StructureWorldAccess;Lnet/minecraft/util/math/BlockBox;IIIIIILnet/minecraft/block/BlockState;Lnet/minecraft/block/BlockState;Z)V", ordinal = 12)
               )
     public void fillCoreRoomTreasure(OceanMonumentGenerator.CoreRoom coreRoom, StructureWorldAccess world, BlockBox box, int minX, int minY, int minZ, int maxX, int maxY, int maxZ, BlockState out, BlockState in, boolean canReplaceAir, StructureWorldAccess world2, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random) {
-        this.fillWithOutline(world, box, minX, minY, minZ, maxX, maxY - 1, maxZ, Blocks.GOLD_BLOCK.getDefaultState(), Blocks.GOLD_BLOCK.getDefaultState(), canReplaceAir);
+        if (AmphitriteCofferMod.CONFIG.disableMonumentGeneration) {
+            this.fillWithOutline(world, box, minX, minY, minZ, maxX, maxY, maxZ, out, in, canReplaceAir);
+            return;
+        }
+
+        this.fillWithOutline(world, box, minX, minY, minZ, maxX, maxY - 1, maxZ, out, in, canReplaceAir);
         this.fillWithOutline(world, box, minX, minY + 1, minZ, maxX, maxY, maxZ, WATERLOGGED_COFFER, WATERLOGGED_COFFER, canReplaceAir);
         int treasurePosition = random.nextInt(4), treasurePosition2 = (treasurePosition + random.nextInt(3) + 1) % 4;
         int lootRotation = 0;

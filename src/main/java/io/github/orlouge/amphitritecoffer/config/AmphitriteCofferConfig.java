@@ -11,4 +11,6 @@ public class AmphitriteCofferConfig implements ConfigData {
     public boolean allowShulkersInCoffers = true;
 
     public int chargePerHeart = 12000;
+
+    public boolean disableMonumentGeneration = false;
 }

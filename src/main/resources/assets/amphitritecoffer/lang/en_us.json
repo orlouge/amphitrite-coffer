@@ -2,5 +2,6 @@
     "block.amphitritecoffer.amphitrite_coffer": "Amphitrite Coffer",
     "text.autoconfig.amphitritecoffer.option.allowShulkersInCoffers": "Allow shulkers inside of coffers",
     "text.autoconfig.amphitritecoffer.option.allowShulkersInCoffers.@Tooltip": "Allow shulkers, bundles and other portable (non-nestable) containers to be put inside of coffers, except for coffers themselves.",
-    "text.autoconfig.amphitritecoffer.option.chargePerHeart": "Charge per Heart of the Sea"
+    "text.autoconfig.amphitritecoffer.option.chargePerHeart": "Charge per Heart of the Sea",
+    "text.autoconfig.amphitritecoffer.option.disableMonumentGeneration": "Disable coffer generation in monuments"
 }
