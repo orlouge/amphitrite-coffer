@@ -22,6 +22,7 @@ public class AmphitriteCofferREIClientPlugin implements REIClientPlugin {
     public void registerCategories(CategoryRegistry registry) {
         registry.add(new WaterConversionDisplayCategory());
         registry.removePlusButton(WATER_CONVERSION);
+        registry.addWorkstations(WATER_CONVERSION, EntryStacks.of(AmphitriteCofferMod.AMPHITRITE_COFFER_BLOCK));
     }
 
     @Override
