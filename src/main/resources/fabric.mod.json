@@ -27,7 +27,7 @@
     "modmenu": [
       "io.github.orlouge.amphitritecoffer.config.AmphitriteCofferModMenuIntegration"
     ],
-    "rei" : [
+    "rei_client" : [
       "io.github.orlouge.amphitritecoffer.rei.AmphitriteCofferREIClientPlugin"
     ]
   },
@@ -36,9 +36,9 @@
   ],
 
   "depends": {
-    "fabricloader": ">=0.13.3",
+    "fabricloader": ">=0.14",
     "fabric": "*",
-    "minecraft": "1.18.2",
+    "minecraft": "1.19",
     "java": ">=17"
   },
   "suggests": {

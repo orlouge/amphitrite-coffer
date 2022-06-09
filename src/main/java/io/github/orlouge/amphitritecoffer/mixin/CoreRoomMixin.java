@@ -14,11 +14,10 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
+import net.minecraft.util.math.random.Random;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
-
-import java.util.Random;
 
 import static net.minecraft.state.property.Properties.WATERLOGGED;
 import io.github.orlouge.amphitritecoffer.AmphitriteCofferMod;
@@ -31,7 +30,7 @@ public abstract class CoreRoomMixin extends StructurePiece {
         super(type, length, boundingBox);
     }
 
-    @Redirect(method = "generate(Lnet/minecraft/world/StructureWorldAccess;Lnet/minecraft/world/gen/StructureAccessor;Lnet/minecraft/world/gen/chunk/ChunkGenerator;Ljava/util/Random;Lnet/minecraft/util/math/BlockBox;Lnet/minecraft/util/math/ChunkPos;Lnet/minecraft/util/math/BlockPos;)V",
+    @Redirect(method = "Lnet/minecraft/structure/OceanMonumentGenerator$CoreRoom;generate(Lnet/minecraft/world/StructureWorldAccess;Lnet/minecraft/world/gen/StructureAccessor;Lnet/minecraft/world/gen/chunk/ChunkGenerator;Lnet/minecraft/util/math/random/Random;Lnet/minecraft/util/math/BlockBox;Lnet/minecraft/util/math/ChunkPos;Lnet/minecraft/util/math/BlockPos;)V",
               at = @At(value = "INVOKE", target = "Lnet/minecraft/structure/OceanMonumentGenerator$CoreRoom;fillWithOutline(Lnet/minecraft/world/StructureWorldAccess;Lnet/minecraft/util/math/BlockBox;IIIIIILnet/minecraft/block/BlockState;Lnet/minecraft/block/BlockState;Z)V", ordinal = 12)
               )
     public void fillCoreRoomTreasure(OceanMonumentGenerator.CoreRoom coreRoom, StructureWorldAccess world, BlockBox box, int minX, int minY, int minZ, int maxX, int maxY, int maxZ, BlockState out, BlockState in, boolean canReplaceAir, StructureWorldAccess world2, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random) {
