@@ -3,14 +3,16 @@ package io.github.orlouge.amphitritecoffer;
 import io.github.orlouge.amphitritecoffer.config.AmphitriteCofferConfig;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
+import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.fabricmc.fabric.api.screenhandler.v1.ScreenHandlerRegistry;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.item.BlockItem;
-import net.minecraft.item.ItemGroup;
+import net.minecraft.item.ItemGroups;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.Registries;
 import net.minecraft.block.Block;
 import me.shedaniel.autoconfig.AutoConfig;
 import me.shedaniel.autoconfig.serializer.GsonConfigSerializer;
@@ -44,31 +46,33 @@ public class AmphitriteCofferMod implements ModInitializer {
 	@Override
 	public void onInitialize() {
 		Registry.register(
-				Registry.BLOCK,
+				Registries.BLOCK,
 				new Identifier("amphitritecoffer", "amphitrite_coffer"),
 				AMPHITRITE_COFFER_BLOCK
 		);
 
+		BlockItem block_item = new BlockItem(AMPHITRITE_COFFER_BLOCK, new FabricItemSettings().maxCount(1));
 		Registry.register(
-				Registry.ITEM,
+				Registries.ITEM,
 				new Identifier("amphitritecoffer", "amphitrite_coffer"),
-				new BlockItem(AMPHITRITE_COFFER_BLOCK, new FabricItemSettings().group(ItemGroup.MISC).maxCount(1))
+				block_item
 		);
+		ItemGroupEvents.modifyEntriesEvent(ItemGroups.FUNCTIONAL).register(entries -> entries.add(block_item));
 
 		AMPHITRITE_COFFER_BLOCK_ENTITY = Registry.register(
-				Registry.BLOCK_ENTITY_TYPE,
+				Registries.BLOCK_ENTITY_TYPE,
 				"amphitritecoffer:amphitrite_coffer_block_entity",
 				FabricBlockEntityTypeBuilder.create(AmphitriteCofferBlockEntity::new, AMPHITRITE_COFFER_BLOCK).build(null)
 		);
 
 		Registry.register(
-				Registry.RECIPE_TYPE,
+				Registries.RECIPE_TYPE,
 				new Identifier("amphitritecoffer", "water_conversion"),
 				WaterConversionRecipe.Type.INSTANCE
 		);
 
 		Registry.register(
-				Registry.RECIPE_SERIALIZER,
+				Registries.RECIPE_SERIALIZER,
 				WaterConversionRecipe.Serializer.ID,
 				WaterConversionRecipe.Serializer.INSTANCE
 		);

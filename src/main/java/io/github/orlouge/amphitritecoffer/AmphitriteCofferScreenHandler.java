@@ -56,7 +56,7 @@ extends ScreenHandler implements AmphitriteCofferSlot.Transfer {
     }
 
     @Override
-    public ItemStack transferSlot(PlayerEntity player, int index) {
+    public ItemStack quickMove(PlayerEntity player, int index) {
         ItemStack itemStack = ItemStack.EMPTY;
         ItemStack giveBack = ItemStack.EMPTY;
         Slot slot = (Slot) this.slots.get(index);

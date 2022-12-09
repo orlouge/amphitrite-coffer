@@ -18,7 +18,7 @@ import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.RecipeType;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registries;
 import net.minecraft.world.World;
 
 import java.util.Arrays;
@@ -197,7 +197,7 @@ public class WaterConversionRecipe implements net.minecraft.recipe.Recipe<Invent
             Ingredient input = Ingredient.fromJson(jsonRecipe.input);
             Optional<Item> output = Optional.empty();
             if (jsonRecipe.output != null) {
-                output = Optional.of(Registry.ITEM.getOrEmpty(new Identifier(jsonRecipe.output))
+                output = Optional.of(Registries.ITEM.getOrEmpty(new Identifier(jsonRecipe.output))
                         .orElseThrow(() -> new JsonSyntaxException("No such item " + jsonRecipe.output)));
             }
 
@@ -234,7 +234,7 @@ public class WaterConversionRecipe implements net.minecraft.recipe.Recipe<Invent
 
             Optional<ItemStack> additionalOutput = Optional.empty();
             if (jsonRecipe.additionalOutput != null)
-                additionalOutput = Registry.ITEM
+                additionalOutput = Registries.ITEM
                         .getOrEmpty(new Identifier(jsonRecipe.additionalOutput))
                         .map(item -> new ItemStack(item, 1));
 
